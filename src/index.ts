@@ -77,7 +77,7 @@ class KeyboardNavigationExtension {
         border-radius: 3px;
         box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.3);
         color: mediumblue;
-        padding: 3px 3px 0 3px;
+        padding: 0 3px 0 3px;
         position: absolute;
         transform: translateY(-50%);
       }
