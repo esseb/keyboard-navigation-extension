@@ -128,6 +128,11 @@ class KeyboardNavigationExtension {
         navigationShortcutRect.height / 2}px`;
       navigationShortcutHint.style.left = `${navigationShortcutRect.left}px`;
 
+      // Use the same font size as the link itself
+      navigationShortcutHint.style.fontSize = window.getComputedStyle(
+        navigationShortcutElement
+      ).fontSize;
+
       this.containerElement.appendChild(navigationShortcutHint);
     }
   }
