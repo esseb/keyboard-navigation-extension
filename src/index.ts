@@ -9,6 +9,23 @@ class KeyboardNavigationExtension {
 
   constructor() {
     document.body.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("scroll", this.handleScroll);
+  }
+
+  private initialize() {
+    if (this.active) {
+      return;
+    }
+
+    this.active = true;
+    this.createContainerElement();
+    this.createNavigationShortcuts();
+    this.createNavigationShortcutHints();
+  }
+
+  private destroy() {
+    this.active = false;
+    this.destroyContainerElement();
   }
 
   private handleKeyDown = (event: KeyboardEvent) => {
@@ -35,21 +52,9 @@ class KeyboardNavigationExtension {
     this.initialize();
   };
 
-  private initialize() {
-    if (this.active) {
-      return;
-    }
-
-    this.active = true;
-    this.createContainerElement();
-    this.createNavigationShortcuts();
-    this.createNavigationShortcutHints();
-  }
-
-  private destroy() {
-    this.active = false;
-    this.destroyContainerElement();
-  }
+  private handleScroll = () => {
+    this.destroy();
+  };
 
   private createContainerElement() {
     this.containerElement = document.createElement("div");
