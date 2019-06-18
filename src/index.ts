@@ -4,6 +4,7 @@ interface NavigationHint {
 
 class KeyboardNavigationExtension {
   private active = false;
+  private currentInput: string = "";
   private containerElement?: HTMLDivElement;
   private navigationShortcuts: NavigationHint = {};
 
@@ -25,12 +26,18 @@ class KeyboardNavigationExtension {
 
   private destroy() {
     this.active = false;
+    this.currentInput = "";
     this.destroyContainerElement();
   }
 
   private handleKeyDown = (event: KeyboardEvent) => {
     if (event.code === "Escape") {
       this.destroy();
+      return;
+    }
+
+    if (this.active) {
+      this.handleInput(event);
       return;
     }
 
@@ -54,6 +61,19 @@ class KeyboardNavigationExtension {
 
   private handleScroll = () => {
     this.destroy();
+  };
+
+  private handleInput = (event: KeyboardEvent) => {
+    const currentKey = event.key.toUpperCase();
+    this.currentInput = `${this.currentInput}${currentKey}`;
+
+    const currentShortcut = this.navigationShortcuts[this.currentInput];
+    if (currentShortcut) {
+      this.destroy();
+
+      // @ts-ignore
+      currentShortcut.click();
+    }
   };
 
   private createContainerElement() {
