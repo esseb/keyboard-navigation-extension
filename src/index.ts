@@ -62,7 +62,7 @@ class KeyboardNavigationExtension {
         font-family: Roboto, sans-serif;
         font-weight: bold;
         left: 0;
-        position: absolute;
+        position: fixed;
         right: 0;
         top: 0;
       }
