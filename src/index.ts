@@ -120,13 +120,20 @@ class KeyboardNavigationExtension {
   private createNavigationShortcuts() {
     const inputElements = getAllInputElements();
 
-    inputElements.forEach(inputElement => {
+    for (let i = 0; i < inputElements.length; i++) {
+      const inputElement = inputElements[i];
+
+      // Ignore elements that are not in the viewport
+      if (isElementInViewport(inputElement) === false) {
+        continue;
+      }
+
       const nextKeyboardShortcut = this.getNextKeyboardShortcut();
 
       if (nextKeyboardShortcut != null) {
         this.navigationShortcuts[nextKeyboardShortcut] = inputElement;
       }
-    });
+    }
   }
 
   private createNavigationShortcutHints() {
@@ -189,4 +196,20 @@ function getAllInputElements() {
 // syntax highlighting when creating a CSS string.
 function css(string: TemplateStringsArray) {
   return string.join();
+}
+
+// http://stackoverflow.com/questions/325933/determine-whether-two-date-ranges-overlap
+function isElementInViewport(element: Element) {
+  const rect = element.getBoundingClientRect();
+
+  if (rect.width === 0 || rect.height === 0) {
+    return false;
+  }
+
+  const inViewVertically =
+    rect.top <= window.innerHeight && rect.top + rect.height >= 0;
+  const inViewHorizontally =
+    rect.left <= window.innerWidth && rect.left + rect.width >= 0;
+
+  return inViewVertically && inViewHorizontally;
 }
