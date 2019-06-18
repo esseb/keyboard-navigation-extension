@@ -90,6 +90,7 @@ class KeyboardNavigationExtension {
         position: fixed;
         right: 0;
         top: 0;
+        z-index: 2147483647;
       }
 
       .keyboard-navigation-extension__shortcut-hint {
