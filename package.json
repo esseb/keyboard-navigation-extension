@@ -11,6 +11,8 @@
   },
   "devDependencies": {
     "is-element-visible": "^1.0.1",
+    "post-compile-webpack-plugin": "^0.1.2",
+    "touch": "^3.1.0",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.2",
     "web-ext": "^3.0.0",
