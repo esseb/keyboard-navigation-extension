@@ -125,6 +125,11 @@ class KeyboardNavigationExtension {
     const inputElements = getAllInputElements();
 
     for (let i = 0; i < inputElements.length; i++) {
+      // We only support 26 navigation shortcuts (A-Z)
+      if (Object.keys(this.navigationShortcuts).length === 26) {
+        break;
+      }
+
       const inputElement = inputElements[i];
 
       if (
@@ -190,8 +195,8 @@ class KeyboardNavigationExtension {
     const numberOfNavigationShortcuts = Object.keys(this.navigationShortcuts)
       .length;
 
-    const charCodeA = 65;
-    return String.fromCharCode(charCodeA + numberOfNavigationShortcuts);
+    // Create shortcut character starting from "A"
+    return String.fromCharCode("A".charCodeAt(0) + numberOfNavigationShortcuts);
   }
 }
 
