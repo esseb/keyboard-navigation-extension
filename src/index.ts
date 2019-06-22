@@ -147,18 +147,30 @@ class KeyboardNavigationExtension {
       return;
     }
 
+    const containerElementRect = this.containerElement.getBoundingClientRect();
+
     for (const navigationShortcut in this.navigationShortcuts) {
       const navigationShortcutElement = this.navigationShortcuts[
         navigationShortcut
       ];
       const navigationShortcutRect = navigationShortcutElement.getBoundingClientRect();
 
+      // Clip top, bottom, and height since the element
+      // might be partially scrolled out of view.
+      const navigationShortcutTop = Math.max(navigationShortcutRect.top, 0);
+      const navigationShortcutBottom = Math.min(
+        navigationShortcutRect.bottom,
+        containerElementRect.bottom
+      );
+      const navigationShortcutHeight =
+        navigationShortcutBottom - navigationShortcutTop;
+
       const navigationShortcutHint = document.createElement("div");
       navigationShortcutHint.className =
         "keyboard-navigation-extension__shortcut-hint";
       navigationShortcutHint.textContent = navigationShortcut;
-      navigationShortcutHint.style.top = `${navigationShortcutRect.top +
-        navigationShortcutRect.height / 2}px`;
+      navigationShortcutHint.style.top = `${navigationShortcutTop +
+        navigationShortcutHeight / 2}px`;
       navigationShortcutHint.style.left = `${navigationShortcutRect.left}px`;
 
       // Use the same font size as the link itself
