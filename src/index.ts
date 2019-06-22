@@ -1,3 +1,6 @@
+// @ts-ignore
+import isElementVisible from "is-element-visible";
+
 interface NavigationHint {
   [key: string]: Element;
 }
@@ -124,8 +127,10 @@ class KeyboardNavigationExtension {
     for (let i = 0; i < inputElements.length; i++) {
       const inputElement = inputElements[i];
 
-      // Ignore elements that are not in the viewport
-      if (isElementInViewport(inputElement) === false) {
+      if (
+        isElementInViewport(inputElement) === false ||
+        isElementVisible(inputElement) === false
+      ) {
         continue;
       }
 
