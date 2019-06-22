@@ -42,7 +42,7 @@ class KeyboardNavigationExtension {
     }
 
     // Only respond when the user presses the "F" key
-    if (event.code !== "KeyV") {
+    if (event.code !== "KeyF") {
       return;
     }
 
