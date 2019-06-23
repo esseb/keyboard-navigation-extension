@@ -2,12 +2,14 @@
 import isElementVisible from "is-element-visible";
 
 interface NavigationHint {
-  [key: string]: Element;
+  [key: string]: {
+    element: HTMLElement;
+    hint: HTMLDivElement;
+  };
 }
 
 class KeyboardNavigationExtension {
   private active = false;
-  private currentInput: string = "";
   private containerElement?: HTMLDivElement;
   private navigationShortcuts: NavigationHint = {};
 
@@ -24,12 +26,10 @@ class KeyboardNavigationExtension {
     this.active = true;
     this.createContainerElement();
     this.createNavigationShortcuts();
-    this.createNavigationShortcutHints();
   }
 
   private destroy() {
     this.active = false;
-    this.currentInput = "";
     this.destroyContainerElement();
   }
 
@@ -68,14 +68,18 @@ class KeyboardNavigationExtension {
 
   private handleInput = (event: KeyboardEvent) => {
     const currentKey = event.key.toUpperCase();
-    this.currentInput = `${this.currentInput}${currentKey}`;
 
-    const currentShortcut = this.navigationShortcuts[this.currentInput];
+    const currentShortcut = this.navigationShortcuts[currentKey];
     if (currentShortcut) {
-      this.destroy();
+      currentShortcut.hint.classList.add(
+        "keyboard-navigation-extension__shortcut-hint--active"
+      );
 
-      // @ts-ignore
-      currentShortcut.click();
+      currentShortcut.element.click();
+
+      setTimeout(() => {
+        this.destroy();
+      }, 100);
     }
   };
 
@@ -105,6 +109,10 @@ class KeyboardNavigationExtension {
         position: absolute;
         transform: translateY(-50%);
       }
+
+      .keyboard-navigation-extension__shortcut-hint--active {
+        transform: translateY(-50%) scale(1.4);
+      }
     `;
 
     this.containerElement.appendChild(styleElement);
@@ -122,8 +130,11 @@ class KeyboardNavigationExtension {
   }
 
   private createNavigationShortcuts() {
-    const inputElements = getAllInputElements();
+    if (this.containerElement == null) {
+      return;
+    }
 
+    const inputElements = getAllInputElements();
     for (let i = 0; i < inputElements.length; i++) {
       // We only support 26 navigation shortcuts (A-Z)
       if (Object.keys(this.navigationShortcuts).length === 26) {
@@ -139,52 +150,54 @@ class KeyboardNavigationExtension {
         continue;
       }
 
-      const nextKeyboardShortcut = this.getNextKeyboardShortcut();
+      const keyboardShortcut = this.getNextKeyboardShortcut();
 
-      if (nextKeyboardShortcut != null) {
-        this.navigationShortcuts[nextKeyboardShortcut] = inputElement;
+      if (keyboardShortcut != null) {
+        const shortcutHint = this.createNavigationShortcutHint(
+          this.containerElement,
+          inputElement,
+          keyboardShortcut
+        );
+        this.containerElement.appendChild(shortcutHint);
+
+        this.navigationShortcuts[keyboardShortcut] = {
+          element: inputElement,
+          hint: shortcutHint
+        };
       }
     }
   }
 
-  private createNavigationShortcutHints() {
-    if (this.containerElement == null) {
-      return;
-    }
+  private createNavigationShortcutHint(
+    containerElement: HTMLDivElement,
+    inputElement: HTMLElement,
+    keyboardShortcut: string
+  ) {
+    const containerElementRect = containerElement.getBoundingClientRect();
 
-    const containerElementRect = this.containerElement.getBoundingClientRect();
+    const inputElementRect = inputElement.getBoundingClientRect();
 
-    for (const navigationShortcut in this.navigationShortcuts) {
-      const navigationShortcutElement = this.navigationShortcuts[
-        navigationShortcut
-      ];
-      const navigationShortcutRect = navigationShortcutElement.getBoundingClientRect();
+    // Clip top, bottom, and height since the element
+    // might be partially scrolled out of view.
+    const inputElementTop = Math.max(inputElementRect.top, 0);
+    const inputElementBottom = Math.min(
+      inputElementRect.bottom,
+      containerElementRect.bottom
+    );
+    const inputElementHeight = inputElementBottom - inputElementTop;
 
-      // Clip top, bottom, and height since the element
-      // might be partially scrolled out of view.
-      const navigationShortcutTop = Math.max(navigationShortcutRect.top, 0);
-      const navigationShortcutBottom = Math.min(
-        navigationShortcutRect.bottom,
-        containerElementRect.bottom
-      );
-      const navigationShortcutHeight =
-        navigationShortcutBottom - navigationShortcutTop;
+    const shortcutHint = document.createElement("div");
+    shortcutHint.className = "keyboard-navigation-extension__shortcut-hint";
+    shortcutHint.textContent = keyboardShortcut;
+    shortcutHint.style.top = `${inputElementTop + inputElementHeight / 2}px`;
+    shortcutHint.style.left = `${inputElementRect.left}px`;
 
-      const navigationShortcutHint = document.createElement("div");
-      navigationShortcutHint.className =
-        "keyboard-navigation-extension__shortcut-hint";
-      navigationShortcutHint.textContent = navigationShortcut;
-      navigationShortcutHint.style.top = `${navigationShortcutTop +
-        navigationShortcutHeight / 2}px`;
-      navigationShortcutHint.style.left = `${navigationShortcutRect.left}px`;
+    // Use the same font size as the input element itself
+    shortcutHint.style.fontSize = window.getComputedStyle(
+      inputElement
+    ).fontSize;
 
-      // Use the same font size as the link itself
-      navigationShortcutHint.style.fontSize = window.getComputedStyle(
-        navigationShortcutElement
-      ).fontSize;
-
-      this.containerElement.appendChild(navigationShortcutHint);
-    }
+    return shortcutHint;
   }
 
   private getNextKeyboardShortcut() {
@@ -211,7 +224,7 @@ const inputElementSelectors = [
 
 function getAllInputElements() {
   const selector = inputElementSelectors.join(",");
-  return document.querySelectorAll(selector);
+  return document.querySelectorAll<HTMLElement>(selector);
 }
 
 // This tagged template literal only exists so we can benefit
