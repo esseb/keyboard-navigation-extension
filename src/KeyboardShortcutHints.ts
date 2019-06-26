@@ -97,7 +97,8 @@ export class KeyboardShortcutHints {
         border-radius: 3px;
         box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.3);
         color: mediumblue;
-        padding: 0 3px 0 3px;
+        line-height: 1;
+        padding: 0.05em 0.15em;
         position: absolute;
         transform: translateY(-50%);
       }
