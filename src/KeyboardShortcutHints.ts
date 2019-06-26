@@ -167,13 +167,18 @@ export class KeyboardShortcutHints {
   ) {
     const containerElementRect = containerElement.getBoundingClientRect();
 
-    const inputElementRect = inputElement.getBoundingClientRect();
+    // We use the first client rect instead of the bounding client rect
+    // because in the case of links that wrap over multiple lines
+    // we want to show the shortcut hint to the left of the first
+    // line of the link text.
+    const inputElementRects = inputElement.getClientRects();
+    const firstInputElementRect = inputElementRects[0];
 
     // Clip top, bottom, and height since the element
     // might be partially scrolled out of view.
-    const inputElementTop = Math.max(inputElementRect.top, 0);
+    const inputElementTop = Math.max(firstInputElementRect.top, 0);
     const inputElementBottom = Math.min(
-      inputElementRect.bottom,
+      firstInputElementRect.bottom,
       containerElementRect.bottom
     );
     const inputElementHeight = inputElementBottom - inputElementTop;
@@ -182,7 +187,7 @@ export class KeyboardShortcutHints {
     shortcutHint.className = "keyboard-navigation-extension__shortcut-hint";
     shortcutHint.textContent = keyboardShortcut;
     shortcutHint.style.top = `${inputElementTop + inputElementHeight / 2}px`;
-    shortcutHint.style.left = `${inputElementRect.left}px`;
+    shortcutHint.style.left = `${firstInputElementRect.left}px`;
 
     // Use the same font size as the input element itself
     shortcutHint.style.fontSize = window.getComputedStyle(
