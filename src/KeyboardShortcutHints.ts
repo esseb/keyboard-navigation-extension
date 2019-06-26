@@ -191,9 +191,25 @@ export class KeyboardShortcutHints {
     shortcutHint.style.left = `${firstInputElementRect.left}px`;
 
     // Use the same font size as the input element itself
-    shortcutHint.style.fontSize = window.getComputedStyle(
-      inputElement
-    ).fontSize;
+    const inputElementFontSize = window.getComputedStyle(inputElement).fontSize;
+    if (inputElementFontSize == null) {
+      throw new Error("Unable to get font size of input element");
+    }
+
+    const inputElementFontSizeMatches = inputElementFontSize.match(
+      /^(\d+(\.\d+)?)px$/
+    );
+    if (inputElementFontSizeMatches == null) {
+      throw new Error("");
+    }
+
+    let inputElementFontSizeValue = parseFloat(inputElementFontSizeMatches[1]);
+
+    // Limit the min and max font size
+    inputElementFontSizeValue = Math.max(inputElementFontSizeValue, 12);
+    inputElementFontSizeValue = Math.min(inputElementFontSizeValue, 30);
+
+    shortcutHint.style.fontSize = `${inputElementFontSizeValue}px`;
 
     return shortcutHint;
   }
