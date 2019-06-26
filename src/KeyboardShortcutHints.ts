@@ -214,7 +214,8 @@ const inputElementSelectors = [
   "a",
   "button",
   "input[type='button']",
-  "input[type='submit']"
+  "input[type='submit']",
+  "summary"
 ];
 
 function getAllInputElements() {
