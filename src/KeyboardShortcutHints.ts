@@ -62,17 +62,20 @@ export class KeyboardShortcutHints {
     const currentKey = event.key.toUpperCase();
 
     const currentShortcut = this.navigationShortcuts[currentKey];
-    if (currentShortcut) {
-      currentShortcut.hint.classList.add(
-        "keyboard-navigation-extension__shortcut-hint--active"
-      );
-
-      currentShortcut.element.click();
-
-      setTimeout(() => {
-        this.stop();
-      }, 100);
+    if (currentShortcut == null) {
+      this.stop();
+      return;
     }
+
+    currentShortcut.hint.classList.add(
+      "keyboard-navigation-extension__shortcut-hint--active"
+    );
+
+    currentShortcut.element.click();
+
+    setTimeout(() => {
+      this.stop();
+    }, 100);
   };
 
   private createContainerElement() {
