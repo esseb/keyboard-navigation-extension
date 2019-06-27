@@ -18,6 +18,20 @@ document.body.addEventListener("keydown", (event: KeyboardEvent) => {
   }
 
   if (event.code === "KeyF") {
-    keyboardShortcutHints.start();
+    if (isTextInputElement(document.activeElement) === false) {
+      keyboardShortcutHints.start();
+    }
   }
 });
+
+function isTextInputElement(element: Element | null) {
+  if (element instanceof HTMLTextAreaElement) {
+    return true;
+  }
+
+  if (element instanceof HTMLInputElement && element.selectionStart != null) {
+    return true;
+  }
+
+  return false;
+}
